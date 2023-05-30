@@ -15,7 +15,7 @@ let intervalReadKey = -1
 const DEFAULT_SCROLL_BACK = 1000
 const MAX_SCROLL_BACK = 9999999
 const MIN_SCROLL_BACK = 1
-const ARTHAS_PORT = isTunnel ? "7777" : "8563"
+const ARTHAS_PORT = isTunnel ? "12202" : "8563"
 const ip = ref("")
 const port = ref('')
 const iframe = ref(true)
@@ -204,6 +204,7 @@ function requestFullScreen(element: HTMLElement) {
 <template>
   <div class="flex flex-col h-[100vh] w-[100vw] resize-none">
     <nav v-if="iframe" class="navbar bg-base-100 md:flex-row flex-col w-[100vw]">
+      <!--
       <div class="navbar-start">
         <div class="dropdown dropdown-start 2xl:hidden">
           <label tabindex="0" class="btn btn-ghost btn-sm">
@@ -247,8 +248,9 @@ function requestFullScreen(element: HTMLElement) {
         </ul>
 
       </div>
-      <div class="navbar-center ">
-        <div class=" xl:flex-row form-control"        
+       -->
+      <div class="navbar-start ">
+        <div class=" xl:flex-row form-control"
         :class="{
           'xl:flex-row':isTunnel,
           'lg:flex-row':!isTunnel
@@ -269,7 +271,7 @@ function requestFullScreen(element: HTMLElement) {
           </label>
         </div>
       </div>
-      <div class="navbar-end">
+      <div class="navbar-center">
         <div class="btn-group   2xl:btn-group-horizontal btn-group-horizontal"
         :class="{
           'md:btn-group-vertical':isTunnel
