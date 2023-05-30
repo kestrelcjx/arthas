@@ -11,7 +11,7 @@ import com.alibaba.arthas.tunnel.server.TunnelServer;
 import com.alibaba.arthas.tunnel.server.cluster.TunnelClusterStore;
 
 /**
- * 
+ *
  * @author hengyunabc 2020-10-27
  *
  */
@@ -32,6 +32,9 @@ public class TunnelServerConfiguration {
         tunnelServer.setSsl(arthasProperties.getServer().isSsl());
         tunnelServer.setPath(arthasProperties.getServer().getPath());
         tunnelServer.setClientConnectHost(arthasProperties.getServer().getClientConnectHost());
+        tunnelServer.setEnableHttpPort(arthasProperties.isEnableHttpPort());
+        tunnelServer.setEnableStatUrl(arthasProperties.isEnableStatUrl());
+        tunnelServer.setHttpPort(arthasProperties.getServerPort());
         if (tunnelClusterStore != null) {
             tunnelServer.setTunnelClusterStore(tunnelClusterStore);
         }

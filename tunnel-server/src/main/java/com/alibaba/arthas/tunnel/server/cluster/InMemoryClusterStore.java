@@ -16,7 +16,7 @@ import org.springframework.cache.caffeine.CaffeineCache;
 import com.alibaba.arthas.tunnel.server.AgentClusterInfo;
 
 /**
- * 
+ *
  * @author hengyunabc 2020-12-02
  *
  */
@@ -59,15 +59,15 @@ public class InMemoryClusterStore implements TunnelClusterStore {
         CaffeineCache caffeineCache = (CaffeineCache) cache;
         com.github.benmanes.caffeine.cache.Cache<Object, Object> nativeCache = caffeineCache.getNativeCache();
 
-        ConcurrentMap<String, AgentClusterInfo> map = (ConcurrentMap<String, AgentClusterInfo>) (ConcurrentMap<?, ?>) nativeCache
-                .asMap();
+        ConcurrentMap<String, AgentClusterInfo> map =
+                (ConcurrentMap<String, AgentClusterInfo>) (ConcurrentMap<?, ?>) nativeCache.asMap();
 
         Map<String, AgentClusterInfo> result = new HashMap<String, AgentClusterInfo>();
 
         String prefix = appName + "_";
         for (Entry<String, AgentClusterInfo> entry : map.entrySet()) {
             String agentId = entry.getKey();
-            if (agentId.startsWith(prefix)) {
+            if (agentId.startsWith(prefix) || agentId.equals(appName)) {
                 result.put(agentId, entry.getValue());
             }
         }

@@ -4,24 +4,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 import com.alibaba.arthas.tunnel.server.app.configuration.ArthasProperties;
 
 /**
- * 
+ *
  * @author hengyunabc 2021-08-11
  *
  */
 @Configuration
+@EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     ArthasProperties arthasProperties;
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.authorizeRequests().requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated().anyRequest()
-        .permitAll().and().formLogin();
+        httpSecurity
+                .authorizeRequests()
+                .requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated()
+                .antMatchers("/api/**").authenticated()
+                .anyRequest().permitAll()
+                .and()
+                .formLogin();
+
         // allow iframe
         if (arthasProperties.isEnableIframeSupport()) {
             httpSecurity.headers().frameOptions().disable();

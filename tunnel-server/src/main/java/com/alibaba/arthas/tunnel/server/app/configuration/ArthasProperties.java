@@ -3,6 +3,7 @@ package com.alibaba.arthas.tunnel.server.app.configuration;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -10,24 +11,27 @@ import com.alibaba.arthas.tunnel.server.utils.InetAddressUtil;
 import com.taobao.arthas.common.ArthasConstants;
 
 /**
- * 
+ *
  * @author hengyunabc 2019-08-29
  *
  */
 @Component
 @ConfigurationProperties(prefix = "arthas")
 public class ArthasProperties {
+    @Value("${server.port}")
+    private int serverPort;
 
     private Server server;
 
     private EmbeddedRedis embeddedRedis;
 
-    /**
-     * supoort apps.html/agents.html
-     */
     private boolean enableDetailPages = false;
 
     private boolean enableIframeSupport = true;
+
+    private boolean enableHttpPort = false;
+
+    private boolean enableStatUrl = false;
 
     public Server getServer() {
         return server;
@@ -59,6 +63,30 @@ public class ArthasProperties {
 
     public void setEnableIframeSupport(boolean enableIframeSupport) {
         this.enableIframeSupport = enableIframeSupport;
+    }
+
+    public boolean isEnableHttpPort() {
+        return enableHttpPort;
+    }
+
+    public void setEnableHttpPort(boolean enableHttpPort) {
+        this.enableHttpPort = enableHttpPort;
+    }
+
+    public boolean isEnableStatUrl() {
+        return enableStatUrl;
+    }
+
+    public void setEnableStatUrl(boolean enableStatUrl) {
+        this.enableStatUrl = enableStatUrl;
+    }
+
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
     }
 
     public static class Server {
@@ -119,7 +147,7 @@ public class ArthasProperties {
 
     /**
      * for test
-     * 
+     *
      * @author hengyunabc 2020-11-03
      *
      */

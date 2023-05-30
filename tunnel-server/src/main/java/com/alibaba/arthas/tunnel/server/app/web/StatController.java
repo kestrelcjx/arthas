@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class StatController {
     private final static Logger logger = LoggerFactory.getLogger(StatController.class);
 
-    @RequestMapping(value = "/api/stat")
+    @RequestMapping(value = "/openapi/stat")
     @ResponseBody
     public Map<String, Object> execute(@RequestParam(value = "ip", required = true) String ip,
-            @RequestParam(value = "version", required = true) String version,
-            @RequestParam(value = "command", required = true) String command,
-            @RequestParam(value = "arguments", required = false, defaultValue = "") String arguments) {
+                                       @RequestParam(value = "version", required = true) String version,
+                                       @RequestParam(value = "command", required = true) String command,
+                                       @RequestParam(value = "arguments", required = false, defaultValue = "") String arguments) {
 
         logger.info("arthas stat, ip: {}, version: {}, command: {}, arguments: {}", ip, version, command, arguments);
 

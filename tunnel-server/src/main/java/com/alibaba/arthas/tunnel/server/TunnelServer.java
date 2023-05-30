@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import com.alibaba.arthas.tunnel.server.utils.InetAddressUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.Promise;
 
 /**
- * 
+ *
  * @author hengyunabc 2019-08-09
  *
  */
@@ -38,12 +39,15 @@ public class TunnelServer {
     private boolean ssl;
     private String host;
     private int port;
+    private boolean enableHttpPort;
+    private boolean enableStatUrl;
+    private int httpPort;
     private String path = ArthasConstants.DEFAULT_WEBSOCKET_PATH;
 
     private Map<String, AgentInfo> agentInfoMap = new ConcurrentHashMap<>();
 
     private Map<String, ClientConnectionInfo> clientConnectionInfoMap = new ConcurrentHashMap<>();
-    
+
     /**
      * 记录 proxy request
      */
@@ -58,7 +62,7 @@ public class TunnelServer {
      * 在集群部署时，保存agentId和host关系
      */
     private TunnelClusterStore tunnelClusterStore;
-    
+
     /**
      * 集群部署时外部连接的host
      */
@@ -75,7 +79,7 @@ public class TunnelServer {
         }
 
         ServerBootstrap b = new ServerBootstrap();
-        b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).handler(new LoggingHandler(LogLevel.INFO))
+        b.group(bossGroup, workerGroup).channel(NioServerSocketChannel.class).handler(new LoggingHandler(LogLevel.DEBUG))
                 .childHandler(new TunnelSocketServerInitializer(this, sslCtx));
 
         if (StringUtils.isBlank(host)) {
@@ -84,7 +88,7 @@ public class TunnelServer {
             channel = b.bind(host, port).sync().channel();
         }
 
-        logger.info("Tunnel server listen at {}:{}", host, port);
+        logger.info("Tunnel server listen at {}:{} , InetAddress : {}", host, port, InetAddressUtil.getInetAddress());
 
         workerGroup.scheduleWithFixedDelay(new Runnable() {
             @Override
@@ -92,7 +96,7 @@ public class TunnelServer {
                 agentInfoMap.entrySet().removeIf(e -> !e.getValue().getChannelHandlerContext().channel().isActive());
                 clientConnectionInfoMap.entrySet()
                         .removeIf(e -> !e.getValue().getChannelHandlerContext().channel().isActive());
-                
+
                 // 更新集群key信息
                 if (tunnelClusterStore != null && clientConnectHost != null) {
                     try {
@@ -134,7 +138,7 @@ public class TunnelServer {
         }
         return agentInfo;
     }
-    
+
     public Optional<ClientConnectionInfo> findClientConnection(String id) {
         return Optional.ofNullable(this.clientConnectionInfoMap.get(id));
     }
@@ -146,7 +150,7 @@ public class TunnelServer {
     public ClientConnectionInfo removeClientConnectionInfo(String id) {
         return this.clientConnectionInfoMap.remove(id);
     }
-    
+
     public void addProxyRequestPromise(String requestId, Promise<SimpleHttpResponse> promise) {
         this.proxyRequestPromiseMap.put(requestId, promise);
         // 把过期的proxy 请求删掉
@@ -163,7 +167,7 @@ public class TunnelServer {
     public void removeProxyRequestPromise(String requestId) {
         this.proxyRequestPromiseMap.remove(requestId);
     }
-    
+
     public Promise<SimpleHttpResponse> findProxyRequestPromise(String requestId) {
         return this.proxyRequestPromiseMap.get(requestId);
     }
@@ -235,5 +239,29 @@ public class TunnelServer {
             path = "/" + path;
         }
         this.path = path;
+    }
+
+    public boolean isEnableHttpPort() {
+        return enableHttpPort;
+    }
+
+    public void setEnableHttpPort(boolean enableHttpPort) {
+        this.enableHttpPort = enableHttpPort;
+    }
+
+    public boolean isEnableStatUrl() {
+        return enableStatUrl;
+    }
+
+    public void setEnableStatUrl(boolean enableStatUrl) {
+        this.enableStatUrl = enableStatUrl;
+    }
+
+    public int getHttpPort() {
+        return httpPort;
+    }
+
+    public void setHttpPort(int httpPort) {
+        this.httpPort = httpPort;
     }
 }

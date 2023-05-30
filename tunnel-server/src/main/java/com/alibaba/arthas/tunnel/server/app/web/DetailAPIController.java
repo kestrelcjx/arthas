@@ -23,7 +23,7 @@ import com.alibaba.arthas.tunnel.server.app.configuration.ArthasProperties;
 import com.alibaba.arthas.tunnel.server.cluster.TunnelClusterStore;
 
 /**
- * 
+ *
  * @author hengyunabc 2020-11-03
  *
  */
@@ -67,7 +67,7 @@ public class DetailAPIController {
     @RequestMapping("/api/tunnelAgentInfo")
     @ResponseBody
     public Map<String, AgentClusterInfo> tunnelAgentIds(@RequestParam(value = "app", required = true) String appName,
-            HttpServletRequest request, Model model) {
+                                                        HttpServletRequest request, Model model) {
         if (!arthasProperties.isEnableDetailPages()) {
             throw new IllegalAccessError("not allow");
         }
@@ -106,7 +106,7 @@ public class DetailAPIController {
     private static String findAppNameFromAgentId(String id) {
         int index = id.indexOf('_');
         if (index < 0 || index >= id.length()) {
-            return null;
+            return id;
         }
 
         return id.substring(0, index);
