@@ -54,6 +54,11 @@ public class BlockedThreadChecker {
         }
         return instance;
     }
+
+    public void stop(){
+        this.threads.clear();
+    }
+
     public void registerThread(Thread thread) {
         registerThread(thread, new Task());
     }

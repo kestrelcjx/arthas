@@ -38,7 +38,13 @@ public class BlockedThreadCommand extends EnhancerCommand {
     public void setMaxExeTime(int maxExeTime) {
         this.maxExeTime = maxExeTime;
     }
-
+    @Option(shortName = "s", longName = "stop")
+    @Description("stop blocked thread monitor")
+    public void setStop(boolean stop){
+        if(stop){
+            BlockedThreadChecker.getInstance().stop();
+        }
+    }
     public int getMaxExeTime() {
         return maxExeTime;
     }
