@@ -276,14 +276,14 @@ public class Enhancer implements ClassFileTransformer {
     /**
      * 是否抽象属性
      */
-    private boolean isAbstract(int access) {
+    protected boolean isAbstract(int access) {
         return (Opcodes.ACC_ABSTRACT & access) == Opcodes.ACC_ABSTRACT;
     }
 
     /**
      * 是否需要忽略
      */
-    private boolean isIgnore(MethodNode methodNode, Matcher methodNameMatcher) {
+    protected boolean isIgnore(MethodNode methodNode, Matcher methodNameMatcher) {
         return null == methodNode || isAbstract(methodNode.access) || !methodNameMatcher.matching(methodNode.name)
                 || ArthasCheckUtils.isEquals(methodNode.name, "<clinit>");
     }
