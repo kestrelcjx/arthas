@@ -36,11 +36,7 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
+import javax.management.*;
 import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.TabularData;
 
@@ -74,6 +70,8 @@ public class MBeanCommand extends AnnotatedCommand {
     private int numOfExecutions = 100;
     private Timer timer;
     private long count = 0;
+
+    private int newValue = Integer.MIN_VALUE;
 
     @Argument(argName = "name-pattern", index = 0, required = false)
     @Description("ObjectName pattern, see javax.management.ObjectName for more detail. \n" +
@@ -116,6 +114,12 @@ public class MBeanCommand extends AnnotatedCommand {
         this.numOfExecutions = numOfExecutions;
     }
 
+    @Option(shortName = "s", longName = "newValue", flag = true)
+    @Description("set newValue to attribute.")
+    public void setNewValue(int newValue) {
+        this.newValue = newValue;
+    }
+
     public String getName() {
         return name;
     }
@@ -143,7 +147,27 @@ public class MBeanCommand extends AnnotatedCommand {
             listMBean(process);
         } else if (isMetaData()) {
             listMetaData(process);
-        } else {
+        } else if(this.newValue != Integer.MIN_VALUE){
+            Object oldValue = null;
+            try{
+                boolean success = false;
+                ObjectName objectName = new ObjectName(name);
+                MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
+                oldValue = platformMBeanServer.getAttribute(objectName,attribute);
+                if(oldValue instanceof Integer){
+                    platformMBeanServer.setAttribute(objectName,new Attribute(attribute,newValue));
+                    success = true;
+                }
+
+                logger.info("{} {} oldValue is {},set newValue {},success {}",
+                        name,attribute,oldValue,newValue,success);
+            }catch (Exception e){
+                logger.error("set {} {} from {} to {} error",name,attribute,oldValue,newValue,e);
+            }
+
+            this.newValue = Integer.MIN_VALUE;
+            listAttribute(process);
+        }else {
             listAttribute(process);
         }
     }
@@ -412,7 +436,9 @@ public class MBeanCommand extends AnnotatedCommand {
                         } else {
                             try {
                                 Object attributeObj = platformMBeanServer.getAttribute(objectName, attributeName);
-                                attributeVOs.add(createMBeanAttributeVO(attributeName, attributeObj));
+                                MBeanAttributeVO mBeanAttributeVO = createMBeanAttributeVO(attributeName, attributeObj);
+                                mBeanAttributeVO.setAttribute(attribute);
+                                attributeVOs.add(mBeanAttributeVO);
                             } catch (Throwable e) {
                                 logger.error("read mbean attribute failed: objectName={}, attributeName={}", objectName, attributeName, e);
                                 String errorStr;

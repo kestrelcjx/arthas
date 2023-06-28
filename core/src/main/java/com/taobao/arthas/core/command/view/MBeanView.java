@@ -43,7 +43,8 @@ public class MBeanView extends ResultView<MBeanModel> {
             TableElement table = new TableElement().leftCellPadding(1).rightCellPadding(1);
             table.row(true, "OBJECT_NAME", objectName);
             table.row(true, label("NAME").style(Decoration.bold.bold()),
-                    label("VALUE").style(Decoration.bold.bold()));
+                    label("VALUE").style(Decoration.bold.bold()),
+                    label("DESC").style(Decoration.bold.bold()));
 
             for (MBeanAttributeVO attributeVO : attributeVOList) {
                 String attributeName = attributeVO.getName();
@@ -68,7 +69,9 @@ public class MBeanView extends ResultView<MBeanModel> {
                     //to string
                     valueStr = String.valueOf(value);
                 }
-                table.row(attributeName, valueStr);
+                MBeanAttributeInfo attributeInfo = attributeVO.getAttribute();
+                String desc = attributeInfo == null ? "" : attributeInfo.toString();
+                table.row(attributeName, valueStr, desc);
             }
             process.write(RenderUtil.render(table, process.width()));
             process.write("\n");

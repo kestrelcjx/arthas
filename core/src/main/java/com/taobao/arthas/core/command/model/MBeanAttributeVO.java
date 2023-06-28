@@ -1,5 +1,7 @@
 package com.taobao.arthas.core.command.model;
 
+import javax.management.MBeanAttributeInfo;
+
 /**
  * MBean attribute
  *
@@ -9,6 +11,7 @@ public class MBeanAttributeVO {
     private String name;
     private Object value;
     private String error;
+    private MBeanAttributeInfo attribute;
 
     public MBeanAttributeVO(String name, Object value) {
         this.name = name;
@@ -43,5 +46,13 @@ public class MBeanAttributeVO {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    public MBeanAttributeInfo getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(MBeanAttributeInfo attribute) {
+        this.attribute = attribute;
     }
 }
