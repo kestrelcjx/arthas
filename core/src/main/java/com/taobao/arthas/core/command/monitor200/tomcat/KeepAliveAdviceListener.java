@@ -23,21 +23,20 @@ class KeepAliveAdviceListener extends AdviceListenerAdapter {
     @Override
     public void before(ClassLoader loader, Class<?> clazz, ArthasMethod method, Object target, Object[] args)
             throws Throwable {
+        Class<?> cls = target.getClass();
         try {
-            Class cls = target.getClass();
-            Method toString = method(cls,"toString");
-            String str = (String)toString.invoke(target);
-            if(str.contains(command.host)){
-                Field keepAliveLeft = field(cls,"keepAliveLeft");
-                keepAliveLeft.setAccessible(true);
-                int left = (int)keepAliveLeft.get(target);
+            Method toString = cls.getDeclaredMethod("toString");
+            String string = (String) toString.invoke(target);
 
-                Method setKeepAliveLeft = method(cls,"setKeepAliveLeft",int.class);
-                setKeepAliveLeft.invoke(target,command.getLeft());
+            Field keepAliveLeft = cls.getDeclaredField("keepAliveLeft");
+            keepAliveLeft.setAccessible(true);
+            int left = (int) keepAliveLeft.get(target);
 
-                int afterLeft = (int)keepAliveLeft.get(target);
-                logger.info("keepAliveLeft value before {} after {} , socket {}", left, afterLeft, str);
-            }
+            Method setKeepAliveLeft = cls.getDeclaredMethod("setKeepAliveLeft",int.class);
+            setKeepAliveLeft.invoke(target, 1);
+
+            int afterLeft = (int) keepAliveLeft.get(target);
+            logger.info("keepAliveLeft value before {} after {} , socket {}", left, afterLeft, string);
         }catch (Throwable t){
             logger.error("{} {}",args[0],args[1],t);
         }
@@ -46,19 +45,7 @@ class KeepAliveAdviceListener extends AdviceListenerAdapter {
     @Override
     public void afterReturning(ClassLoader loader, Class<?> clazz, ArthasMethod method, Object target, Object[] args,
                                Object returnObject) throws Throwable {
-        try {
-            Class cls = target.getClass();
-            Method toString = method(cls,"toString");
-            String str = (String)toString.invoke(target);
-            if(str.contains(command.host)) {
-                Field keepAliveLeft = field(cls, "keepAliveLeft");
-                keepAliveLeft.setAccessible(true);
-                int left = (int) keepAliveLeft.get(target);
-                logger.info("keepAliveLeft value {} , socket {}", left, str);
-            }
-        }catch (Throwable t){
-            logger.error("{} {}",args[0],args[1],t);
-        }
+
     }
 
     @Override
@@ -66,26 +53,4 @@ class KeepAliveAdviceListener extends AdviceListenerAdapter {
                               Throwable throwable) {
         logger.info("{} {} {} {}",clazz.getName(),method.getName(),target,args.length);
     }
-
-    private static Method method(Class<?> clazz, String methodName,Class<?>... parameterTypes){
-        if(clazz == null){
-            return null;
-        }
-        try{
-            return clazz.getDeclaredMethod(methodName,parameterTypes);
-        } catch (NoSuchMethodException e) {
-            return method(clazz.getSuperclass(),methodName);
-        }
-    }
-    private static Field field(Class<?> clazz, String fieldName){
-        if(clazz == null){
-            return null;
-        }
-        try{
-            return clazz.getDeclaredField(fieldName);
-        }catch (NoSuchFieldException exception){
-            return field(clazz.getSuperclass(),fieldName);
-        }
-    }
-
 }

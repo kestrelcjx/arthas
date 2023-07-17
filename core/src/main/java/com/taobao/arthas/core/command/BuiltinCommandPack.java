@@ -115,7 +115,7 @@ public class BuiltinCommandPack implements CommandResolver {
         commandClassList.add(BlockedThreadCommand.class);
         commandClassList.add(BigKeyCommand.class);
 
-        commandClassList.add(OffLineCommand.class);
+        //commandClassList.add(OffLineCommand.class);
         commandClassList.add(KeepAliveCommand.class);
 
         try {
