@@ -1,13 +1,14 @@
 package com.taobao.arthas.core.command.model;
 
 import java.lang.management.ThreadInfo;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class DeadlockInfo {
     private List<ThreadInfo> threads = new LinkedList<>();
-    private Map<Integer, ThreadInfo> ownerThreadPerLock;
+    private Map<Integer, ThreadInfo> ownerThreadPerLock = new HashMap<>();
 
     public Map<Integer, ThreadInfo> getOwnerThreadPerLock() {
         return ownerThreadPerLock;
